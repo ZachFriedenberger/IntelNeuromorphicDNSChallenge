@@ -17,6 +17,8 @@ from lava.lib.dl import slayer
 from audio_dataloader import DNSAudio
 from snr import si_snr
 
+from tqdm import trange
+
 
 def collate_fn(batch):
     noisy, clean, noise = [], [], []
@@ -198,7 +200,8 @@ if __name__ == '__main__':
                         help='number of epochs to run')
     parser.add_argument('-path',
                         type=str,
-                        default='../../data/MicrosoftDNS_4_ICASSP/',
+                        #default='../../data/MicrosoftDNS_4_ICASSP/',
+                        default= '../../data/',
                         help='dataset path')
 
     args = parser.parse_args()
@@ -221,9 +224,14 @@ if __name__ == '__main__':
             f.write('{} : {}\n'.format(arg, value))
 
     lam = args.lam
-
-    print('Using GPUs {}'.format(args.gpu))
-    device = torch.device('cuda:{}'.format(args.gpu[0]))
+    
+    if torch.cuda.is_available():
+        print('Using GPUs {}'.format(args.gpu))
+        device = torch.device('cuda:{}'.format(args.gpu[0]))
+    else: 
+        print('Using CPU')
+        device = torch.device("cpu")
+        
 
     out_delay = args.out_delay
     if len(args.gpu) == 1:
@@ -275,7 +283,7 @@ if __name__ == '__main__':
     stats = slayer.utils.LearningStats(accuracy_str='SI-SNR',
                                        accuracy_unit='dB')
 
-    for epoch in range(args.epoch):
+    for epoch in trange(args.epoch):
         t_st = datetime.now()
         for i, (noisy, clean, noise) in enumerate(train_loader):
             net.train()

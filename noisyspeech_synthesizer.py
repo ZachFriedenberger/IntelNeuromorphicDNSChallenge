@@ -90,6 +90,7 @@ def synthesize(params):
     file_num = params['fileindex_start']
 
     while file_num <= params['fileindex_end']:
+        print(file_num)
         try:
             # generate clean speech
             clean, clean_sf, clean_cf, clean_laf, clean_index = \
@@ -173,7 +174,7 @@ if __name__ == '__main__':
     parser.add_argument('-noise_activity_threshold', type=float, default=0.0, help='activity threshold for noise')
     parser.add_argument('-is_validation_set', type=bool, default=False, help='validation data flag')
     # parser.add_argument('-use_singing_data', type=bool, default=False, help='use singing data')
-    # parser.add_argument('-use_emotion_data', type=bool, default=False, help='use emotion data')
+    parser.add_argument('-use_emotion_data', type=bool, default=False, help='use emotion data')
     # parser.add_argument('-use_mandarin_data', type=bool, default=False, help='use mandarin data')
     # parser.add_argument('-reverb_table', type=str, default='RIR_table_simple.csv', help='reverberation table data')
     # parser.add_argument('-lower_t60', type=float, default=0.3, help='lower bound of t60 range in seconds')
@@ -197,8 +198,10 @@ if __name__ == '__main__':
     print('Stop idx:', params['fileindex_end'])
     print(f'Generating synthesized data in {root}')
 
-    clean_dir = root + 'datasets_fullband/clean_fullband'
-    noise_dir = root + 'datasets_fullband/noise_fullband'
+    clean_dir = root + 'datasets_fullband/clean_fullband/'
+    print(clean_dir)
+    
+    noise_dir = root + 'datasets_fullband/noise_fullband/'
     clean_filenames = glob.glob(clean_dir + '/**/*.wav', recursive=True)
     noise_filenames = glob.glob(noise_dir + '/**/*.wav', recursive=True)
 
@@ -207,9 +210,14 @@ if __name__ == '__main__':
 
     params['cleanfilenames'] = clean_filenames
     params['num_cleanfiles'] = len(clean_filenames)
+    
+    print('Number of clean files', params['num_cleanfiles'])
 
     params['noisefilenames'] = noise_filenames
     params['num_noisefiles'] = len(noise_filenames)
+    
+    print('Number of noise files', params['num_noisefiles'])
+
 
     # Call synthesize() to generate audio
     clean_source_files, clean_clipped_files, clean_low_activity_files, \
